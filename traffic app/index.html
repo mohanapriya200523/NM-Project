@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Traffic Prediction</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      perspective: 1000px;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      width: 90%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      transform: rotateX(5deg);
+      transition: transform 0.5s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 80%);
+      pointer-events: none;
+    }
+    
+    .container:hover {
+      transform: rotateX(0deg) translateY(-10px);
+    }
+    
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #00ffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      position: relative;
+      transform: translateZ(20px);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s;
+      transform: translateZ(15px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #00ffff, 0 5px 15px rgba(0, 255, 255, 0.4);
+    }
+    
+    button {
+      width: 100%;
+      padding: 1rem;
+      margin: 1rem 0;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #00ccff, #00ffaa);
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transform: translateZ(25px);
+      transition: all 0.3s;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(45deg);
+      transition: 0.7s;
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+      0% { left: -150%; top: -60%; }
+      100% { left: 100%; top: 100%; }
+    }
+    
+    button:hover {
+      transform: translateZ(35px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+    
+    p#output {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      font-size: 1.1rem;
+      min-height: 60px;
+      transform: translateZ(10px);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 3D road animation in the background */
+    .road {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotateX(80deg);
+      transform-style: preserve-3d;
+      z-index: -1;
+    }
+    
+    .road::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(90deg, 
+        transparent, 
+        transparent 48%, 
+        rgba(255, 255, 255, 0.2) 48%, 
+        rgba(255, 255, 255, 0.2) 52%);
+      background-size: 100px 100%;
+      animation: moveRoad 1s linear infinite;
+    }
+    
+    @keyframes moveRoad {
+      0% { background-position: 0 0; }
+      100% { background-position: 100px 0; }
+    }
+    
+    /* Traffic lights animation */
+    .traffic-lights {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 15px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 5px 0;
+    }
+    
+    .light {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .red { background-color: #ff3b30; animation: blink 2s infinite; }
+    .yellow { background-color: #ffcc00; animation: blink 2s infinite 0.7s; }
+    .green { background-color: #34c759; animation: blink 2s infinite 1.4s; }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; box-shadow: 0 0 10px currentColor; }
+      51%, 100% { opacity: 0.3; box-shadow: none; }
+    }
+    
+    /* Cars animation */
+    .car {
+      position: absolute;
+      width: 40px;
+      height: 20px;
+      background: linear-gradient(45deg, #ff3b30, #ff9500);
+      border-radius: 5px;
+      bottom: -30px;
+      animation: moveCar 8s linear infinite;
+      transform-style: preserve-3d;
+      z-index: -1;
+    }
+    
+    .car::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 5px;
+      width: 30px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+    
+    .car:nth-child(2) {
+      left: 20%;
+      animation-delay: 1s;
+      background: linear-gradient(45deg, #34c759, #5ac8fa);
+    }
+    
+    .car:nth-child(3) {
+      left: 60%;
+      animation-delay: 3s;
+      background: linear-gradient(45deg, #5856d6, #af52de);
+    }
+    
+    .car:nth-child(4) {
+      left: 80%;
+      animation-delay: 5s;
+      background: linear-gradient(45deg, #ffcc00, #ff9500);
+    }
+    
+    @keyframes moveCar {
+      0% { transform: translateX(-100px) translateZ(0); }
+      100% { transform: translateX(calc(100vw + 100px)) translateZ(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="road"></div>
+  <div class="car"></div>
+  <div class="car"></div>
+  <div class="car"></div>
+  <div class="car"></div>
+  
+  <div class="container">
+    <div class="traffic-lights">
+      <div class="light red"></div>
+      <div class="light yellow"></div>
+      <div class="light green"></div>
+    </div>
+    
+    <h1>AI Traffic Prediction</h1>
+    <input type="number" id="vehicleCount" placeholder="Enter vehicle count" />
+    <select id="timeOfDay">
+      <option value="morning">Morning</option>
+      <option value="noon">Noon</option>
+      <option value="evening">Evening</option>
+      <option value="night">Night</option>
+    </select>
+    <button onclick="predict()">Predict</button>
+    <p id="output">Prediction results will appear here...</p>
+  </div>
+  <!-- Add this inside <body> in each HTML -->
+<nav style="position: absolute; top: 20px; left: 20px;">
+  <a href="index.html" style="margin-right: 20px; color: cyan;">Home</a>
+  <a href="about.html" style="margin-right: 20px; color: cyan;">About</a>
+  <a href="logs.html" style="margin-right: 20px; color: cyan;">View Logs</a>
+</nav>
+
+  
+  <script>
+    function predict() {
+      const vehicleCount = document.getElementById('vehicleCount').value;
+      const timeOfDay = document.getElementById('timeOfDay').value;
+      const output = document.getElementById('output');
+      
+      if (!vehicleCount) {
+        output.textContent = "Please enter vehicle count";
+        return;
+      }
+      
+      // Simple prediction logic - this is just a placeholder
+      let congestionLevel;
+      const count = parseInt(vehicleCount);
+      
+      if (timeOfDay === 'morning' || timeOfDay === 'evening') {
+        if (count < 50) congestionLevel = "Low";
+        else if (count < 150) congestionLevel = "Moderate";
+        else congestionLevel = "High";
+      } else {
+        if (count < 30) congestionLevel = "Low";
+        else if (count < 100) congestionLevel = "Moderate";
+        else congestionLevel = "High";
+      }
+      
+      output.textContent =` Prediction: ${congestionLevel} traffic congestion during ${timeOfDay} with ${vehicleCount} vehicles.`;
+      
+      // Add animation effect to the output
+      output.style.background = 'rgba(0, 255, 255, 0.1)';
+      setTimeout(() => {
+        output.style.background = 'rgba(0, 0, 0, 0.2)';
+      }, 1000);
+    }
+    
+    // Add 3D tilt effect based on mouse position
+    const container = document.querySelector('.container');
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      
+      container.style.transform = `rotateX(${5 - y * 10}deg) rotateY(${-5 + x * 10}deg)` ;
+    }
+  );
+  </script>
+</body>
+</html>

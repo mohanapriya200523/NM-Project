@@ -1,0 +1,100 @@
+<!-- about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About AI-EBPL</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+  /* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #74ebd5, #ACB6E5);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+nav {
+  width: 100%;
+  background-color: #ad6e6e;
+  padding: 1rem 2rem;
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  margin-top: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+  animation: fadeIn 1s ease-in;
+}
+
+h1 {
+  color: #1c1c6b;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px #aaa;
+}
+
+p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  background: linear-gradient(to right, #ffecd2, #fcb69f);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+li:hover {
+  transform: scale(1.03);
+  cursor: default;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+</head>
+<body>
+  <nav> TRAFFIC FLOW OPTIMIZATION </nav>
+  <div class="container">
+    <h1>About Our Project</h1>
+    <p>This project uses AI to predict traffic congestion using vehicle count and time of day.</p>
+    <ul>
+      <li><strong>Title:</strong> Smart Traffic Flow Prediction</li>
+      <li><strong>Stack:</strong> HTML, CSS, JS, FastAPI, MySQL</li>
+      <li><strong>Goal:</strong> Optimize traffic flow and reduce congestion using data-driven predictions.</li>
+    </ul>
+  </div>
+</body>
+</html>
